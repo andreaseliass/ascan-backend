@@ -1,5 +1,9 @@
-Adicionar o docker ao projeto
+Iniciar o projeto:
 
-1. Criar o docker-compose.yml, pegando o template aqui: https://hub.docker.com/_/mysql, adicionando a porta 3006 ao db
+1. docker-compose up -d
 
-2. configurar o arquivo database.js
+2. nodemon index.js
+
+Para mexer no banco de dados:
+1. docker exec -it projetobackend-db-1 bash -l
+2. mysql -u root -p
