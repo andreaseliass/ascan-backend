@@ -7,3 +7,7 @@ Iniciar o projeto:
 Para mexer no banco de dados:
 1. docker exec -it projetobackend-db-1 bash -l
 2. mysql -u root -p
+
+git flow:
+git flow feature start
+git checkout feature/nomedafeature
