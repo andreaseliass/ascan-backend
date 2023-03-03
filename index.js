@@ -94,32 +94,43 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
         const { user_id, status_id } = JSON.parse(msg.content.toString());
 
         //verifica se o usuário já possui uma assinatura
-        const [rows] = await connection.query(
+        const [rows]= await connection.query(
           'SELECT * FROM subscriptions WHERE user_id = ?',
           [user_id]
         );
 
         if (rows.length > 0) {
           console.log('Usuário já possui uma assinatura');
-          
+          return;
         }
+        
+        connection.getConnection().then(async (connection) =>{
+          connection.beginTransaction() ;
+          try {
+            connection.query(
+              'INSERT INTO subscriptions (user_id, status_id) VALUES (?, ?)',
+              [user_id, status_id]
+            );
+                
 
-        await connection.beginTransaction ;
-        try {
-          await connection.query(
-            'INSERT INTO subscriptions (user_id, status_id) VALUES (?, ?)',
-            [user_id, status_id]
+          const [subid]= await connection.query(
+            'SELECT * FROM subscriptions WHERE user_id = ?',
+            [user_id]
           );
+          const subscription_id = subid[0].id;
 
-          await connection.query(
-            'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
-            [user_id, 'SUBSCRIPTION_PURCHASED']
-          );
-          await connection.commit();
-        } catch (error) {
-          await connection.rollback();
-          throw error;
+
+            connection.query(
+              'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
+              [subscription_id, 'SUBSCRIPTION_PURCHASED']
+            );
+            connection.commit();
+          } catch (error) {
+            connection.rollback();
+            throw error;
         }
+        })
+        
       },
       { noAck: true }
     );
@@ -129,9 +140,10 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
       'SUBSCRIPTION_CANCELED',
       async (msg) => {
         console.log(' [x] Recebido %s', msg.content.toString());
+
         const { user_id, status_id } = JSON.parse(msg.content.toString());
         //verifica se o usuário já possui uma assinatura, e se o status é diferente de 2
-
+        
         const [rows] = await connection.query(
           'SELECT * FROM subscriptions WHERE user_id = ? AND status_id = 2',
           [user_id]
@@ -142,23 +154,31 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
           return;
         }
 
+        connection.getConnection().then(async (connection) =>{
+          connection.beginTransaction();
+          try {
+              connection.query(
+              'UPDATE subscriptions SET status_id = ? WHERE user_id = ?',
+              [status_id, user_id]
+              );
 
-        await connection.beginTransaction();
-        try {
-            await connection.query(
-            'UPDATE subscriptions SET status_id = ? WHERE user_id = ?',
-            [status_id, user_id]
-            );
+              const [subid]= await connection.query(
+                'SELECT * FROM subscriptions WHERE user_id = ?',
+                [user_id]
+              );
 
-            await connection.query(
-            'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
-            [user_id, 'SUBSCRIPTION_CANCELED']
-            );
-            await connection.commit();
-        } catch (error) {
-          //await connection.rollback();
-          throw error;
-        }
+              const subscription_id = subid[0].id;
+
+              connection.query(
+              'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
+              [subscription_id, 'SUBSCRIPTION_CANCELED']
+              );
+              connection.commit();
+          } catch (error) {
+            connection.rollback();
+            throw error;
+          }
+        })
       },
       { noAck: true }
     );
@@ -173,8 +193,8 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
 
         //verifica se o usuário já possui uma assinatura com o status restart
         const [rows] = await connection.query(
-          'SELECT * FROM subscriptions WHERE user_id = ? AND status_id = ?',
-          [user_id, status_id]
+          'SELECT * FROM subscriptions WHERE user_id = ? AND status_id = 3',
+          [user_id]
         );
 
         if (rows.length > 0) {
@@ -182,18 +202,31 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
           return;
         }
 
-        await connection.beginTransaction();
-        try {
-            await connection.query(
-            'UPDATE subscriptions SET status_id = ? WHERE user_id = ?',
-            [status_id, user_id]
-            );
-            await connection.commit();
-        } catch (error) {
-          await connection.rollback();
-          throw error;
-        }
-      },
+        connection.getConnection().then(async (connection) =>{
+          connection.beginTransaction();
+          try {
+              connection.query(
+              'UPDATE subscriptions SET status_id = ? WHERE user_id = ?',
+              [status_id, user_id]
+              );
+              const [subid]= await connection.query(
+                'SELECT * FROM subscriptions WHERE user_id = ?',
+                [user_id]
+              );
+              const subscription_id = subid[0].id;
+              connection.query(
+                'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
+                [subscription_id, 'SUBSCRIPTION_RESTARTED']
+                );
+
+              
+              connection.commit();
+          } catch (error) {
+            connection.rollback();
+            throw error;
+          }
+        })
+       },
       { noAck: true }
     );
   });
