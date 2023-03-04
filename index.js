@@ -27,11 +27,11 @@ app.post('/subscriptions/create', async (req, res) => {
                 durable: false,
               });
             channel.sendToQueue(queue, Buffer.from(msg));
-            console.log(' [x] Sent %s', msg);
+            console.log('Create - [x] Enviado %s', msg);
         })
     });
 
-    return res.send('ok');
+    return res.send('Subscrição Criada');
 } );
 
 
@@ -48,11 +48,11 @@ app.patch('/subscriptions/restart', async (req, res) => {
                 durable: false,
               });
             channel.sendToQueue(queue, Buffer.from(msg));
-            console.log(' [x] Sent %s', msg);
+            console.log('Restart - [x] Enviado %s', msg);
         })
     });
 
-    return res.send('ok');
+    return res.send('Subscrição Recuperada');
 } );
 
 app.patch('/subscriptions/cancel', async (req, res) => {
@@ -68,11 +68,11 @@ app.patch('/subscriptions/cancel', async (req, res) => {
                 durable: false,
               });
             channel.sendToQueue(queue, Buffer.from(msg));
-            console.log(' [x] Enviado %s', msg);
+            console.log('Cancel - [x] Enviado %s', msg);
         })
     });
 
-    return res.send('ok');
+    return res.send('Subscrição Cancelada');
 } );
 
 
@@ -89,7 +89,7 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
     ch.consume(
       'SUBSCRIPTION_PURCHASED',
       async (msg) => {
-        console.log(' [x] Recebido %s', msg.content.toString());
+        console.log('Create - [x] Recebido %s', msg.content.toString());
 
         const { user_id, status_id } = JSON.parse(msg.content.toString());
 
@@ -100,7 +100,7 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
         );
 
         if (rows.length > 0) {
-          console.log('Usuário já possui uma assinatura');
+          console.log('-------------------------------------------------------\nUsuário já possui uma assinatura\n-------------------------------------------------------');
           return;
         }
         
@@ -139,7 +139,7 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
     ch.consume(
       'SUBSCRIPTION_CANCELED',
       async (msg) => {
-        console.log(' [x] Recebido %s', msg.content.toString());
+        console.log('Cancel - [x] Recebido %s', msg.content.toString());
 
         const { user_id, status_id } = JSON.parse(msg.content.toString());
         //verifica se o usuário já possui uma assinatura, e se o status é diferente de 2
@@ -150,7 +150,7 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
         );
 
         if (rows.length > 0) {
-          console.log('Assinatura já foi cancelada');
+          console.log('-------------------------------------------------------\nAssinatura já foi cancelada\n-------------------------------------------------------');
           return;
         }
 
@@ -187,7 +187,7 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
     ch.consume(
       'SUBSCRIPTION_RESTARTED',
       async (msg) => {
-        console.log(' [x] Recebido %s', msg.content.toString());
+        console.log('Restart - [x] Recebido %s', msg.content.toString());
 
         const { user_id, status_id } = JSON.parse(msg.content.toString());
 
@@ -198,7 +198,7 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
         );
 
         if (rows.length > 0) {
-          console.log('Usuário já possui uma assinatura com o status restart');
+          console.log('-------------------------------------------------------\n Usuário já possui uma assinatura com o status restart \n-------------------------------------------------------');
           return;
         }
 
@@ -209,24 +209,25 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
               'UPDATE subscriptions SET status_id = ? WHERE user_id = ?',
               [status_id, user_id]
               );
+
               const [subid]= await connection.query(
                 'SELECT * FROM subscriptions WHERE user_id = ?',
                 [user_id]
               );
-              const subscription_id = subid[0].id;
-              connection.query(
-                'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
-                [subscription_id, 'SUBSCRIPTION_RESTARTED']
-                );
 
-              
+              const subscription_id = subid[0].id;
+
+              connection.query(
+              'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
+              [subscription_id, 'SUBSCRIPTION_RESTARTED']
+              );
               connection.commit();
           } catch (error) {
             connection.rollback();
             throw error;
           }
         })
-       },
+      },
       { noAck: true }
     );
   });
