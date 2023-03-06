@@ -1,9 +1,12 @@
 const axios = require('axios');
+const connection = require('./database');
+const { faker } = require('@faker-js/faker');
 
-// var a='Thiago Elias';
-async function execute(a, user_id) {
+
+
+async function execute(name, user_id) {
     await axios.post('http://localhost:3000/users', {
-        "full_name": a
+        "full_name": name
     })
     await axios.post('http://localhost:3000/subscriptions/create', {
         "user_id": user_id
@@ -36,9 +39,9 @@ async function restartforsameuser(user_id){
 
 
 
-function main (a, user_id){
+function main (name, user_id){
     setTimeout(() => {
-        execute(a, user_id);
+        execute(name, user_id);
         console.log('\n- Criando usuário, criando subscription, cancelando subscription e recuperando subscription')
       
         setTimeout(() => {
@@ -64,5 +67,16 @@ function main (a, user_id){
 
 }
 
-main('Renata', 139);
-  
+async function executando(callback){
+    const [last_id]= await connection.query(
+        'SELECT MAX(id) FROM users;'
+    );
+    
+    var idfinal = Object.values(last_id[0])[0];
+    user_id = idfinal+1;
+    const name = faker.name.fullName(); 
+    callback(name, user_id);
+    return;
+}
+
+executando(main);

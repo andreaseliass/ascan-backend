@@ -119,6 +119,12 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
           );
           const subscription_id = subid[0].id;
 
+          // const [last_id]= await connection.query(
+          //   'SELECT MAX(id) FROM users;'
+          // );
+        
+          // console.log(Object.values(last_id[0])[0]);
+
 
             connection.query(
               'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
