@@ -1,7 +1,6 @@
 const express = require('express');
 const connection = require('./database');
 const amqp = require('amqplib/callback_api');
-
 const app = express();
 
 app.use(express.json());
@@ -12,7 +11,6 @@ app.post('/users', async (req, res) => {
     const  [ result ] = await connection.execute('INSERT INTO users (full_name) VALUE (?)', [full_name]);
     return res.status(201).json(result);
 } );
-
 
 app.post('/subscriptions/create', async (req, res) => {
     const { user_id } = req.body;
@@ -33,7 +31,6 @@ app.post('/subscriptions/create', async (req, res) => {
 
     return res.send('Subscrição Criada');
 } );
-
 
 app.patch('/subscriptions/restart', async (req, res) => {
     const { user_id } = req.body;
@@ -74,8 +71,6 @@ app.patch('/subscriptions/cancel', async (req, res) => {
 
     return res.send('Subscrição Cancelada');
 } );
-
-
 
 amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
     con.createChannel((err, ch) => {
@@ -118,13 +113,6 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
             [user_id]
           );
           const subscription_id = subid[0].id;
-
-          // const [last_id]= await connection.query(
-          //   'SELECT MAX(id) FROM users;'
-          // );
-        
-          // console.log(Object.values(last_id[0])[0]);
-
 
             connection.query(
               'INSERT INTO event_history (subscription_id, type) VALUES (?, ?)',
@@ -238,6 +226,5 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
     );
   });
 });
-
 
 app.listen(3000);

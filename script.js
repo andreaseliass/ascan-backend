@@ -1,6 +1,8 @@
 const axios = require('axios');
 const connection = require('./database');
 const { faker } = require('@faker-js/faker');
+const process = require('process');
+const { exit } = require('process');
 
 
 
@@ -37,8 +39,6 @@ async function restartforsameuser(user_id){
     })
 }
 
-
-
 function main (name, user_id){
     setTimeout(() => {
         execute(name, user_id);
@@ -58,7 +58,8 @@ function main (name, user_id){
       
               setTimeout(() => {
                 createforsameuser(user_id);
-                console.log('\n- Tentando criar outra subscription para usuário que já tem subscription')
+                console.log('\n- Tentando criar outra subscription para usuário que já tem subscription');
+                process.exit();
               }, 800)
             }, 800)
           }, 800)
@@ -68,15 +69,20 @@ function main (name, user_id){
 }
 
 async function executando(callback){
-    const [last_id]= await connection.query(
-        'SELECT MAX(id) FROM users;'
-    );
+     const [last_id]= await connection.query(
+         'SELECT MAX(id) FROM users;'
+     );
     
-    var idfinal = Object.values(last_id[0])[0];
-    user_id = idfinal+1;
-    const name = faker.name.fullName(); 
+     var idfinal = Object.values(last_id[0])[0];
+     user_id = idfinal+1;
+    if (!process.argv[2]){
+        console.log('Digite o nome do usuário a ser criado!')
+        process.exit(); 
+    }
+    var name = process.argv[2];
+   
     callback(name, user_id);
-    return;
 }
 
 executando(main);
+
