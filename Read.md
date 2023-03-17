@@ -10,6 +10,9 @@ Iniciar o projeto:
 1. docker-compose up -d
 2. npm run start
 
+Rodar o script:
+1. node script.js
+
 
 Para mexer no banco de dados:
 1. docker exec -it projetobackend-db-1 bash -l
