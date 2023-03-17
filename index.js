@@ -97,6 +97,8 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
         if (rows.length > 0) {
           console.log('-------------------------------------------------------\nUsuário já possui uma assinatura\n-------------------------------------------------------');
           return;
+        }else{
+          console.log('-------------------------------------------------------\nAssinatura criada com sucesso\n-------------------------------------------------------');
         }
         
         connection.getConnection().then(async (connection) =>{
@@ -146,6 +148,8 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
         if (rows.length > 0) {
           console.log('-------------------------------------------------------\nAssinatura já foi cancelada\n-------------------------------------------------------');
           return;
+        }else{
+          console.log('-------------------------------------------------------\nAssinatura cancelada com sucesso\n-------------------------------------------------------');
         }
 
         connection.getConnection().then(async (connection) =>{
@@ -192,8 +196,10 @@ amqp.connect('amqp://admin:admin@localhost:5672', (err, con) => {
         );
 
         if (rows.length > 0) {
-          console.log('-------------------------------------------------------\n Usuário já possui uma assinatura com o status restart \n-------------------------------------------------------');
+          console.log('-------------------------------------------------------\n Usuário já possui uma assinatura com o status recuperada \n-------------------------------------------------------');
           return;
+        }else{
+          console.log('-------------------------------------------------------\nAssinatura recuperada com sucesso\n-------------------------------------------------------');
         }
 
         connection.getConnection().then(async (connection) =>{
