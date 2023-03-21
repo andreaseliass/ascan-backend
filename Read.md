@@ -1,73 +1,24 @@
 Primeiro uso:
-1. npm install
-2. docker-compose up -d
-3. ir em localhost:8080, preencher login com "root" e senha com "example"
-4. clicar à esquerda em "comando SQL"
-5. copiar o que está em seed, colar e executar
+- Logo após da clone no projeto, o usuário deve seguir os seguinte comandos:
+1. no terminal, digitar o comando: npm install
+2. no terminal, digitar o comando: docker-compose up -d
+3. no navegador ir em localhost:8080, preencher login com "root" e senha com "example"
+4. clicar à esquerda em "SQL command"(comando SQL)
+5. copiar o conteúdo que está no arquivo que está em seed.sql, colar na caixa de comando SQL e clicar em executar
+6. no terminal, digitar o comando: npm run start
+7. abrir um segundo terminal e digitar o comando: node .\script.js
 
 
-Iniciar o projeto:
-1. docker-compose up -d
-2. npm run start
-
-Rodar o script:
-1. node script.js
+Iniciar o projeto (após o primeiro uso):
+1. no terminal, digitar o comando: docker-compose up -d
+2. no terminal, digitar o comando: npm run start
+3. abrir um segundo terminal e digitar o comando: node .\script.js
 
 
 Para mexer no banco de dados:
 1. docker exec -it projetobackend-db-1 bash -l
 2. mysql -u root -p
 
-git flow:
-git flow feature start
-git checkout feature/nomedafeature
-
-
+endereços
 http://localhost:15672/ - rabbitmq - login: admin / senha: admin
-http://localhost:3000/ - aplicação
-http://localhost:8080/ - banco de dados
-
-Documentação das notificações
-
-- Criar usuário
-Postman:
-1. POST - http://localhost:3000/users
-2. Body
-3. Seleciona raw e JSON
-4. Requisição:
-{
-    "full_name": "nome da pessoa"
-}
-
-Tipos de Notificações:
-
-- Criar subscrição (SUBSCRIPTION_PURCHASED - A Compra foi realizada e a assinatura deve estar com status ativa).
-1. POST - http://localhost:3000/subscriptions/create
-2. Body
-3. Seleciona raw e JSON
-4. Requisição:
-{
-    "user_id": 2,
-}
-- Cancelar subscrição (SUBSCRIPTION_CANCELED - A Compra foi cancelada e a assinatura deve estar com status cancelada).
-- Criar subscrição (SUBSCRIPTION_PURCHASED - A Compra foi realizada e a assinatura deve estar com status ativa).
-1. POST - http://localhost:3000/subscriptions/cancel
-2. Body
-3. Seleciona raw e JSON
-4. Requisição:
-{
-    "user_id": 2,
-}
-
-- Subscrição recuperada (SUBSCRIPTION_RESTARTED - A Compra foi recuperada e a assinatura deve estar com status ativa).
-- Cancelar subscrição (SUBSCRIPTION_CANCELED - A Compra foi cancelada e a assinatura deve estar com status cancelada).
-- Criar subscrição (SUBSCRIPTION_PURCHASED - A Compra foi realizada e a assinatura deve estar com status ativa).
-1. POST - http://localhost:3000/subscriptions/restart
-2. Body
-3. Seleciona raw e JSON
-4. Requisição:
-{
-    "user_id": 2,
-}
-
-FIM
+http://localhost:8080/ - banco de dados - login: root /  senha: example
