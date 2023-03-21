@@ -19,6 +19,6 @@ Para mexer no banco de dados:
 1. docker exec -it projetobackend-db-1 bash -l
 2. mysql -u root -p
 
-endereços
+endereços<br>
 http://localhost:15672/ - rabbitmq - login: admin / senha: admin<br>
 http://localhost:8080/ - banco de dados - login: root /  senha: example
