@@ -1,4 +1,4 @@
-- Primeiro uso:
+- Primeiro uso:<br>
 Logo após da clone no projeto, o usuário deve seguir os seguinte comandos:
 1. no terminal, digitar o comando: npm install
 2. no terminal, digitar o comando: docker-compose up -d
@@ -19,6 +19,6 @@ Logo após da clone no projeto, o usuário deve seguir os seguinte comandos:
 1. docker exec -it projetobackend-db-1 bash -l
 2. mysql -u root -p
 
--Endereços<br>
+- Endereços<br>
 http://localhost:15672/ - rabbitmq - login: admin / senha: admin<br>
 http://localhost:8080/ - banco de dados - login: root /  senha: example
