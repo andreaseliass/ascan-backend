@@ -20,5 +20,5 @@ Para mexer no banco de dados:
 2. mysql -u root -p
 
 endereços
-http://localhost:15672/ - rabbitmq - login: admin / senha: admin
+http://localhost:15672/ - rabbitmq - login: admin / senha: admin<br>
 http://localhost:8080/ - banco de dados - login: root /  senha: example
